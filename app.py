@@ -275,6 +275,37 @@ st.markdown(
         overflow-wrap: normal;
         hyphens: none;
     }
+
+    .section-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f6f8ff 100%);
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        padding: 24px 28px;
+        margin: 22px 0 28px 0;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .section-label {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #5B4BDB;
+        letter-spacing: 0.12em;
+        margin-bottom: 8px;
+    }
+
+    .section-card h3 {
+        margin: 0 0 8px 0;
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #1f2937;
+    }
+
+    .section-card p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -580,11 +611,26 @@ if page == "Overview":
 # ----------------------------
 elif page == "Model Prediction":
     st.title("Model Prediction")
+
     st.markdown(
         """
         This page allows users to input a single nanoparticle candidate formulation and estimate
         its probability of being classified as a high-delivery candidate using the retained CatBoost model.
         """
+    )
+
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="section-label">FORMULATION INPUT</div>
+            <h3>Candidate nanoparticle formulation</h3>
+            <p>
+                Enter formulation descriptors below and run the retained CatBoost screening model
+                to estimate high-delivery potential.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
     st.divider()
 
