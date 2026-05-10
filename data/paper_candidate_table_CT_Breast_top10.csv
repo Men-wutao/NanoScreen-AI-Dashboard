@@ -1,0 +1,11 @@
+﻿Rank,Type,MAT,TS,CT,TM,Shape,Size (log10),Size (nm),Size local interval,Zeta Potential,Zeta Potential local interval,Admin,Admin local interval,Predicted score,Exploration score,Model rank
+1,ONM,Other OM,Passive,Breast,Xenograft Heterotopic,Rod,2.386,243.2204,231.0 – 255.0 nm,3.0,-10.7 – 16.7,5.0,4.2 – 6.7,0.9859,0.1499,1
+2,ONM,Other OM,Passive,Breast,Allograft Heterotopic,Rod,2.511,324.3396,311.0 – 337.0 nm,-4.34,-8.3 – -1.1,8.29,5.2 – 14.2,0.9831,0.171,3
+3,ONM,Gold,Active,Breast,Allograft Orthotopic,Spherical,1.0,10.0,7.0 – 22.0 nm,10.2,0.1 – 23.9,0.2,0.0 – 3.8,0.9824,0.3895,4
+4,ONM,Gold,Active,Breast,Allograft Orthotopic,Spherical,0.826,6.6988,6.0 – 19.0 nm,16.3,2.6 – 30.0,1.0,0.0 – 3.9,0.9817,0.3986,5
+5,ONM,Gold,Active,Breast,Xenograft Heterotopic,Spherical,0.903,7.9983,6.0 – 16.0 nm,-6.0,-17.9 – 7.7,0.303,0.0 – 1.1,0.9807,0.3407,7
+6,ONM,Gold,Active,Breast,Xenograft Heterotopic,Spherical,1.093,12.388,6.0 – 19.0 nm,-9.0,-18.1 – 4.7,0.303,0.0 – 1.1,0.979,0.3319,9
+7,ONM,Gold,Active,Breast,Allograft Orthotopic,Spherical,1.516,32.8095,21.0 – 41.0 nm,6.36,-1.9 – 20.1,1.0,0.0 – 1.1,0.9766,0.3677,16
+8,ONM,Dendrimer,Active,Breast,Allograft Heterotopic,Spherical,0.699,5.0003,3.0 – 5.0 nm,-4.34,-13.0 – -0.2,25.0,13.6 – 90.3,0.9758,0.1884,19
+9,ONM,Polymeric,Passive,Breast,Xenograft Heterotopic,Spherical,1.964,92.045,92.0 – 94.0 nm,0.0,-0.5 – 13.7,100.0,34.7 – 165.3,0.9749,0.2061,22
+10,ONM,Hybrid,Active,Breast,Xenograft Heterotopic,Spherical,0.886,7.6913,8.0 – 8.0 nm,-5.7,-18.1 – 8.0,1.0,0.0 – 1.1,0.9714,0.3509,31
