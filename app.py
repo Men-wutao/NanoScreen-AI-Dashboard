@@ -25,12 +25,23 @@ def read_csv_safely(path):
     except UnicodeDecodeError:
         return pd.read_csv(path, encoding="utf-8-sig")
 
+def result_card(label, value):
+    st.markdown(
+        f"""
+        <div class="result-card">
+            <div class="result-label">{label}</div>
+            <div class="result-value">{value}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
 @st.cache_resource
 def load_model_payload():
     model_path = MODEL_DIR / "best_cat.joblib"
     if not model_path.exists():
-        raise FileNotFoundError(f"未找到模型文件：{model_path}")
+        raise FileNotFoundError(f"Model file not found: {model_path}")
     return joblib.load(model_path)
 
 
@@ -235,6 +246,32 @@ st.markdown(
         font-weight: 800;
         margin: 2px 0;
     }
+
+    .result-card {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 18px 20px;
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+        min-height: 96px;
+    }
+
+    .result-label {
+        font-size: 0.82rem;
+        color: #64748b;
+        margin-bottom: 10px;
+        white-space: normal;
+        line-height: 1.35;
+    }
+
+    .result-value {
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: #111827;
+        line-height: 1.2;
+        word-break: normal;
+        white-space: normal;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -328,7 +365,7 @@ if page == "Overview":
     if framework_path.exists():
         st.image(str(framework_path), use_container_width=True)
     else:
-        st.warning("未找到 figures/study_framework.svg，请确认流程图文件是否已经放入 figures 文件夹。")
+        st.warning("figures/study_framework.svg was not found. Please make sure the study framework figure has been placed in the figures folder.")
 
     st.divider()
 
@@ -541,10 +578,10 @@ if page == "Overview":
 elif page == "Model Prediction":
     st.title("Model Prediction")
     st.markdown(
-    """
-    该页面用于输入单个纳米颗粒候选配方，并基于最终 CatBoost 模型预测其属于 
-    **high-delivery candidate** 的概率。
-    """
+        """
+        This page allows users to input a single nanoparticle candidate formulation and estimate
+        its probability of being classified as a high-delivery candidate using the retained CatBoost model.
+        """
     )
     st.divider()
 
@@ -608,7 +645,7 @@ elif page == "Model Prediction":
         st.subheader("Prediction Results")
 
         if not model_loaded:
-            st.error(f"模型加载失败：{model_error}")
+            st.error(f"Model loading failed: {model_error}")
         else:
             input_df = pd.DataFrame(
                 [{
@@ -628,13 +665,21 @@ elif page == "Model Prediction":
                 prob, pred, threshold, level = predict_high_delivery(input_df, payload)
 
                 col1, col2, col3, col4 = st.columns(4)
-                col1.metric("Predicted high-delivery probability", f"{prob:.4f}")
-                col2.metric("Decision threshold", f"{threshold:.3f}")
-                col3.metric(
-                    "Predicted class",
-                    "High-delivery" if pred == 1 else "Low-delivery"
-                )
-                col4.metric("Recommendation", level)
+
+                with col1:
+                    result_card("High-delivery probability", f"{prob:.4f}")
+
+                with col2:
+                    result_card("Decision threshold", f"{threshold:.3f}")
+
+                with col3:
+                    result_card(
+                        "Predicted class",
+                        "High-delivery" if pred == 1 else "Low-delivery"
+                    )
+
+                with col4:
+                    result_card("Recommendation", level)
 
                 st.dataframe(
                     pd.DataFrame(
@@ -662,7 +707,7 @@ elif page == "Model Prediction":
                     st.error("This formulation is not prioritized by the current screening model.")
 
             except Exception as e:
-                st.error("预测失败，请检查输入变量是否与训练模型一致。")
+                st.error("Prediction failed. Please check whether the input variables are consistent with the trained model.")
                 st.exception(e)
 
 # ----------------------------
@@ -672,7 +717,8 @@ elif page == "Candidate Screening":
     st.title("Candidate Screening")
     st.markdown(
         """
-        该页面用于上传 CSV 或 Excel 文件，对多个候选纳米颗粒配方进行批量预测和排序。
+        This page allows users to upload a CSV or Excel file for batch prediction, ranking,
+        and prioritization of multiple nanoparticle candidate formulations.
         """
     )
 
@@ -702,7 +748,7 @@ elif page == "Candidate Screening":
         if missing_cols:
             st.error(f"Missing required columns: {missing_cols}")
         elif not model_loaded:
-            st.error(f"模型加载失败：{model_error}")
+            st.error(f"Model loading failed: {model_error}")
         else:
             if st.button("Run Batch Screening", type="primary"):
                 try:
@@ -763,7 +809,7 @@ elif page == "Candidate Screening":
                     )
 
                 except Exception as e:
-                    st.error("批量预测失败，请检查上传文件中的类别名称和数值范围是否与训练数据一致。")
+                    st.error("Batch prediction failed. Please check whether category names and numerical ranges in the uploaded file are consistent with the training data.")
                     st.exception(e)
 
 # ----------------------------
@@ -795,7 +841,7 @@ elif page == "Top Candidates":
             top10_df = read_csv_safely(top10_path)
             st.dataframe(top10_df, use_container_width=True, height=420)
         else:
-            st.error("未找到 data/paper_candidate_table_top10.csv")
+            st.error("data/paper_candidate_table_top10.csv was not found.")
 
     with tab2:
         st.subheader("Paper candidate table: Top 200")
@@ -803,7 +849,7 @@ elif page == "Top Candidates":
             top200_df = read_csv_safely(top200_path)
             st.dataframe(top200_df, use_container_width=True, height=520)
         else:
-            st.error("未找到 data/paper_candidate_table_top200.csv")
+            st.error("data/paper_candidate_table_top200.csv was not found.")
 
     with tab3:
         st.subheader("Generated Top 200 candidates")
@@ -811,7 +857,7 @@ elif page == "Top Candidates":
             generated_top200_df = read_csv_safely(generated_top200_path)
             st.dataframe(generated_top200_df, use_container_width=True, height=520)
         else:
-            st.error("未找到 data/generated_top200.csv")
+            st.error("data/generated_top200.csv was not found.")
 
     with tab4:
         st.subheader("All generated candidates with model scores")
@@ -819,7 +865,7 @@ elif page == "Top Candidates":
             all_scored_df = read_csv_safely(all_scored_path)
             st.dataframe(all_scored_df, use_container_width=True, height=520)
         else:
-            st.error("未找到 data/generated_candidates_scored.csv")
+            st.error("data/generated_candidates_scored.csv was not found.")
 
     st.warning(
         "Top candidates are model-prioritized hypotheses for future experimental validation, "
@@ -854,7 +900,7 @@ elif page == "Local Working Range":
             pretty_df = read_csv_safely(pretty_path)
             st.dataframe(pretty_df, use_container_width=True, height=260)
         else:
-            st.error("未找到 data/range_recommendation_pretty.csv")
+            st.error("data/range_recommendation_pretty.csv was not found.")
 
     with tab2:
         st.subheader("Local working range: detailed table")
@@ -862,7 +908,7 @@ elif page == "Local Working Range":
             detail_df = read_csv_safely(detail_path)
             st.dataframe(detail_df, use_container_width=True, height=520)
         else:
-            st.error("未找到 data/range_recommendation_detail.csv")
+            st.error("data/range_recommendation_detail.csv was not found.")
 
     with tab3:
         st.subheader("Breast-specific local working range")
@@ -870,7 +916,7 @@ elif page == "Local Working Range":
             breast_df = read_csv_safely(breast_path)
             st.dataframe(breast_df, use_container_width=True, height=420)
         else:
-            st.warning("未找到 data/range_recommendation_Breast_pretty.csv")
+            st.warning("data/range_recommendation_Breast_pretty.csv was not found.")
 
     st.info(
         "Local working ranges should be interpreted as model-prioritized parameter windows, "
@@ -895,7 +941,7 @@ elif page == "SHAP Explanation":
     fi_path = RESULTS_DIR / "best_cat_feature_importances.csv"
 
     if not fi_path.exists():
-        st.error("未找到 results/best_cat_feature_importances.csv")
+        st.error("results/best_cat_feature_importances.csv was not found.")
     else:
         fi_df = read_csv_safely(fi_path)
 
@@ -908,7 +954,7 @@ elif page == "SHAP Explanation":
         importance_col = "importance"
 
         if feature_col not in fi_df.columns or importance_col not in fi_df.columns:
-            st.warning("无法识别 feature / importance 列，请检查 CSV 表头。")
+            st.warning("The feature / importance columns could not be identified. Please check the CSV header.")
             st.write("Current columns:", list(fi_df.columns))
         else:
             fi_plot_df = fi_df[[feature_col, importance_col]].copy()
@@ -1006,9 +1052,9 @@ elif page == "Model Evaluation":
     pred_path = RESULTS_DIR / "best_cat_test_predictions.csv"
 
     if not metrics_path.exists():
-        st.error("未找到 results/best_cat_metrics_test.csv")
+        st.error("results/best_cat_metrics_test.csv was not found.")
     elif not pred_path.exists():
-        st.error("未找到 results/best_cat_test_predictions.csv")
+        st.error("results/best_cat_test_predictions.csv was not found.")
     else:
         metrics_df = read_csv_safely(metrics_path)
         pred_df = read_csv_safely(pred_path)
@@ -1050,7 +1096,7 @@ elif page == "Model Evaluation":
             ranking_df.columns = ["Metric", "Value"]
             st.dataframe(ranking_df, use_container_width=True, height=240)
         else:
-            st.warning("未在 best_cat_metrics_test.csv 中找到 Precision@K / Recall@K / EF 指标。")
+            st.warning("Precision@K / Recall@K / EF metrics were not found in best_cat_metrics_test.csv.")
 
         st.divider()
 
