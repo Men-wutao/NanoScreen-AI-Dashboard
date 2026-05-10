@@ -251,13 +251,14 @@ st.markdown(
         background-color: #ffffff;
         border: 1px solid #e5e7eb;
         border-radius: 14px;
-        padding: 18px 20px;
+        padding: 20px 22px;
         box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
-        min-height: 96px;
+        min-height: 105px;
+        margin-bottom: 16px;
     }
 
     .result-label {
-        font-size: 0.82rem;
+        font-size: 0.86rem;
         color: #64748b;
         margin-bottom: 10px;
         white-space: normal;
@@ -265,12 +266,14 @@ st.markdown(
     }
 
     .result-value {
-        font-size: 1.65rem;
+        font-size: 1.45rem;
         font-weight: 800;
         color: #111827;
-        line-height: 1.2;
-        word-break: normal;
-        white-space: normal;
+        line-height: 1.25;
+        white-space: nowrap;
+        word-break: keep-all;
+        overflow-wrap: normal;
+        hyphens: none;
     }
     </style>
     """,
@@ -664,21 +667,23 @@ elif page == "Model Prediction":
             try:
                 prob, pred, threshold, level = predict_high_delivery(input_df, payload)
 
-                col1, col2, col3, col4 = st.columns(4)
+                row1_col1, row1_col2 = st.columns(2, gap="large")
 
-                with col1:
+                with row1_col1:
                     result_card("High-delivery probability", f"{prob:.4f}")
 
-                with col2:
+                with row1_col2:
                     result_card("Decision threshold", f"{threshold:.3f}")
 
-                with col3:
+                row2_col1, row2_col2 = st.columns(2, gap="large")
+
+                with row2_col1:
                     result_card(
                         "Predicted class",
                         "High-delivery" if pred == 1 else "Low-delivery"
                     )
 
-                with col4:
+                with row2_col2:
                     result_card("Recommendation", level)
 
                 st.dataframe(
