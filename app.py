@@ -187,7 +187,7 @@ st.markdown(
     }
 
     .hero-label {
-        color: #ef4444;
+        color: #5B4BDB;
         font-weight: 800;
         letter-spacing: 0.12em;
         font-size: 0.82rem;
@@ -242,7 +242,7 @@ st.markdown(
 
     .pipe-arrow {
         font-size: 1.3rem;
-        color: #ef4444;
+        color: #5B4BDB;
         font-weight: 800;
         margin: 2px 0;
     }
@@ -334,7 +334,7 @@ page = st.sidebar.radio(
         "Candidate Screening",
         "Top Candidates",
         "Local Working Range",
-        "SHAP Explanation",
+        "Model Interpretation",
         "Model Evaluation"
     ]
 )
@@ -424,13 +424,63 @@ if page == "Overview":
         recall_value = 0.9000
         f1_value = 0.7297
 
+
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="section-label">MODEL CARD</div>
+            <h3>Screening task definition</h3>
+            <p>
+                NanoScreen-AI prioritizes nanoparticle formulations according to their predicted
+                probability of belonging to the training-set-defined q0.75 high-delivery class
+                for 24 h tumor delivery efficiency. The retained CatBoost model is used for
+                candidate ranking, batch screening, local working range recommendation, and
+                model interpretation.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    mc1, mc2, mc3, mc4 = st.columns(4, gap="large")
+
+    with mc1:
+        result_card("Endpoint", "DE<sub>tumor</sub> at 24 h")
+
+    with mc2:
+        result_card("Task", "q0.75 high-delivery")
+
+    with mc3:
+        result_card("Primary model", "CatBoost")
+
+    with mc4:
+        result_card("Use case", "Candidate screening")
+
+    mc5, mc6, mc7, mc8 = st.columns(4, gap="large")
+
+    with mc5:
+        result_card("Training samples", "429")
+
+    with mc6:
+        result_card("Test samples", "105")
+
+    with mc7:
+        result_card("Test PR-AUC", "0.8447")
+
+    with mc8:
+        result_card("Test ROC-AUC", "0.9182")
+
+    st.info(
+        "Predictions should be interpreted as computational screening hypotheses for experimental "
+        "prioritization, not as experimentally validated optimal nanoparticle formulations."
+    )
     st.header("Core results")
 
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Analytical records", "534")
     c2.metric("Training samples", "429")
     c3.metric("Independent test samples", "105")
-    c4.metric("High-delivery cutoff", "1.7728 %ID")
+    c4.metric("q0.75 high-delivery cutoff", "1.7728 %ID")
 
     c5, c6, c7, c8 = st.columns(4)
     c5.metric("Primary model", "CatBoost")
@@ -467,8 +517,9 @@ if page == "Overview":
             """
             **2. Task definition**
 
-            DETumor at 24 h was converted into a q0.75 high-delivery classification task.
-            """
+            DE<sub>tumor</sub> at 24 h was converted into a q0.75 high-delivery classification task.
+            """,
+            unsafe_allow_html=True
         )
 
     with w3:
@@ -494,7 +545,7 @@ if page == "Overview":
             """
             **5. Interpretation**
 
-            Feature importance and local working ranges support mechanistic interpretation.
+            Feature importance and local working ranges support model interpretation and experimental planning.
             """
         )
 
@@ -568,7 +619,7 @@ if page == "Overview":
     with m5:
         st.markdown(
             """
-            ### SHAP Explanation
+            ### Model Interpretation
 
             Interpret model behavior using:
 
@@ -594,6 +645,29 @@ if page == "Overview":
         )
 
     st.divider()
+
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="section-label">DATA AND MODEL AVAILABILITY</div>
+            <h3>Reproducible screening resource</h3>
+            <p>
+                This dashboard provides access to the retained CatBoost screening model, 
+                independent test-set evaluation results, model-prioritized candidate tables, 
+                feature-importance summaries, and local working range recommendations. 
+                The model-prioritized candidates should be interpreted as computational 
+                hypotheses for experimental validation rather than experimentally confirmed 
+                optimal nanoparticle formulations.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.info(
+        "Citation note: If this dashboard is used for research or experimental planning, "
+        "please cite the associated manuscript once available."
+    )
 
     # ----------------------------
     # Usage note
@@ -772,17 +846,52 @@ elif page == "Candidate Screening":
         and prioritization of multiple nanoparticle candidate formulations.
         """
     )
-
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="section-label">BATCH SCREENING</div>
+            <h3>Upload candidate formulations</h3>
+            <p>
+                Upload a CSV or Excel file containing nanoparticle formulation descriptors.
+                The retained CatBoost model will estimate high-delivery probability, assign
+                recommendation levels, and return a ranked candidate list for experimental prioritization.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     required_cols = [
         "Type", "MAT", "TS", "CT", "TM", "Shape",
         "Size", "Zeta Potential", "Admin"
     ]
 
-    st.code(
-        "Required columns: Type, MAT, TS, CT, TM, Shape, Size, Zeta Potential, Admin",
-        language="text"
+    st.info(
+        "Required input columns: Type, MAT, TS, CT, TM, Shape, Size, Zeta Potential, Admin"
     )
 
+    template_df = pd.DataFrame(
+        [{
+            "Type": "ONM",
+            "MAT": "Gold",
+            "TS": "Passive",
+            "CT": "Breast",
+            "TM": "Xenograft Heterotopic",
+            "Shape": "Spherical",
+            "Size": 2.0,
+            "Zeta Potential": 0.0,
+            "Admin": 5.0
+        }]
+    )
+
+    template_csv = template_df.to_csv(index=False).encode("utf-8-sig")
+
+    st.download_button(
+        label="Download input template",
+        data=template_csv,
+        file_name="nanoscreen_input_template.csv",
+        mime="text/csv",
+        type="primary"
+    )
     uploaded_file = st.file_uploader("Upload candidate file", type=["csv", "xlsx"])
 
     if uploaded_file is not None:
@@ -841,14 +950,69 @@ elif page == "Candidate Screening":
                     )
                     recommendation_count.columns = ["Recommendation", "Count"]
 
-                    st.bar_chart(
-                        recommendation_count.set_index("Recommendation")
+                    rec_fig = px.bar(
+                        recommendation_count,
+                        x="Recommendation",
+                        y="Count",
+                        text="Count",
+                        title="Recommendation distribution"
+                    )
+
+                    rec_fig.update_traces(
+                        textposition="outside",
+                        marker_color="#5B4BDB"
+                    )
+
+                    rec_fig.update_layout(
+                        height=420,
+                        template="plotly_white",
+                        margin=dict(l=40, r=30, t=60, b=40),
+                        showlegend=False,
+                        xaxis_title="Recommendation level",
+                        yaxis_title="Number of candidates"
+                    )
+
+                    st.plotly_chart(
+                        rec_fig,
+                        use_container_width=True,
+                        config=PLOT_CONFIG
                     )
 
                     st.divider()
 
                     st.subheader("Ranked screening results")
-                    st.dataframe(result_df, use_container_width=True)
+
+                    preferred_cols = [
+                        "rank",
+                        "Type",
+                        "MAT",
+                        "TS",
+                        "CT",
+                        "TM",
+                        "Shape",
+                        "Size",
+                        "Zeta Potential",
+                        "Admin",
+                        "predicted_high_delivery_probability",
+                        "predicted_class",
+                        "recommendation"
+                    ]
+
+                    display_cols = [col for col in preferred_cols if col in result_df.columns]
+                    summary_result_df = result_df[display_cols].copy()
+
+                    st.dataframe(
+                        summary_result_df.head(50),
+                        use_container_width=True,
+                        height=420
+                    )
+
+                    with st.expander("View full ranked screening table", expanded=False):
+                        st.dataframe(
+                            result_df,
+                            use_container_width=True,
+                            height=520
+                        )
 
                     csv = result_df.to_csv(index=False).encode("utf-8-sig")
 
@@ -868,6 +1032,21 @@ elif page == "Candidate Screening":
 # ----------------------------
 elif page == "Top Candidates":
     st.title("Top-ranked Candidate Formulations")
+
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="section-label">CANDIDATE PRIORITIZATION</div>
+            <h3>Model-prioritized nanoparticle formulations</h3>
+            <p>
+                This page summarizes candidate formulations prioritized by the retained CatBoost
+                screening model, including literature-derived candidates, generated candidates,
+                and model-scored virtual formulations.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Generated candidates", "50,000")
@@ -890,7 +1069,37 @@ elif page == "Top Candidates":
         st.subheader("Paper candidate table: Top 10")
         if top10_path.exists():
             top10_df = read_csv_safely(top10_path)
-            st.dataframe(top10_df, use_container_width=True, height=420)
+
+            top10_display_cols = [
+                "Rank",
+                "Type",
+                "MAT",
+                "TS",
+                "CT",
+                "TM",
+                "Shape",
+                "Size (log10)",
+                "Size (nm)",
+                "Zeta Potential",
+                "Admin",
+                "predicted_high_delivery_probability",
+                "recommendation",
+            ]
+
+            display_cols = [col for col in top10_display_cols if col in top10_df.columns]
+
+            st.dataframe(
+                top10_df[display_cols],
+                use_container_width=True,
+                height=420
+            )
+
+            with st.expander("View full Paper Top 10 table", expanded=False):
+                st.dataframe(
+                    top10_df,
+                    use_container_width=True,
+                    height=520
+                )
         else:
             st.error("data/paper_candidate_table_top10.csv was not found.")
 
@@ -898,15 +1107,38 @@ elif page == "Top Candidates":
         st.subheader("Paper candidate table: Top 200")
         if top200_path.exists():
             top200_df = read_csv_safely(top200_path)
-            st.dataframe(top200_df, use_container_width=True, height=520)
+
+            st.dataframe(
+                top200_df.head(50),
+                use_container_width=True,
+                height=420
+            )
+
+            with st.expander("View full Paper Top 200 table", expanded=False):
+                st.dataframe(
+                    top200_df,
+                    use_container_width=True,
+                    height=520
+                )
         else:
             st.error("data/paper_candidate_table_top200.csv was not found.")
-
     with tab3:
         st.subheader("Generated Top 200 candidates")
         if generated_top200_path.exists():
             generated_top200_df = read_csv_safely(generated_top200_path)
-            st.dataframe(generated_top200_df, use_container_width=True, height=520)
+
+            st.dataframe(
+                generated_top200_df.head(50),
+                use_container_width=True,
+                height=420
+            )
+
+            with st.expander("View full Generated Top 200 table", expanded=False):
+                st.dataframe(
+                    generated_top200_df,
+                    use_container_width=True,
+                    height=520
+                )
         else:
             st.error("data/generated_top200.csv was not found.")
 
@@ -914,14 +1146,21 @@ elif page == "Top Candidates":
         st.subheader("All generated candidates with model scores")
         if all_scored_path.exists():
             all_scored_df = read_csv_safely(all_scored_path)
-            st.dataframe(all_scored_df, use_container_width=True, height=520)
+
+            st.dataframe(
+                all_scored_df.head(50),
+                use_container_width=True,
+                height=420
+            )
+
+            with st.expander("View full scored candidate table", expanded=False):
+                st.dataframe(
+                    all_scored_df,
+                    use_container_width=True,
+                    height=520
+                )
         else:
             st.error("data/generated_candidates_scored.csv was not found.")
-
-    st.warning(
-        "Top candidates are model-prioritized hypotheses for future experimental validation, "
-        "not experimentally validated optimal formulations."
-    )
 
 
 # ----------------------------
@@ -935,6 +1174,21 @@ elif page == "Local Working Range":
         This page displays model-prioritized local working ranges for key continuous variables,
         including **Size**, **Zeta Potential**, and **Admin**.
         """
+    )
+
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="section-label">DESIGN SPACE RECOMMENDATION</div>
+            <h3>Model-prioritized local parameter windows</h3>
+            <p>
+                This module summarizes local working ranges for key continuous formulation
+                variables. These windows are intended to support formulation design and
+                experimental planning rather than define experimentally validated optima.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     pretty_path = DATA_DIR / "range_recommendation_pretty.csv"
@@ -976,9 +1230,9 @@ elif page == "Local Working Range":
 
 
 # ----------------------------
-# Page 6: SHAP Explanation
+# Page 6: Model Interpretation
 # ----------------------------
-elif page == "SHAP Explanation":
+elif page == "Model Interpretation":
     st.title("Model Interpretation")
 
     st.markdown(
@@ -989,6 +1243,21 @@ elif page == "SHAP Explanation":
         """
     )
 
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="section-label">MODEL INTERPRETATION</div>
+            <h3>Feature-importance-based interpretation</h3>
+            <p>
+                This module reports feature-importance patterns from the retained CatBoost model.
+                Preprocessed one-hot features are aggregated back to original predictors to provide
+                a clearer interpretation of the main drivers of high-delivery candidate ranking.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
     fi_path = RESULTS_DIR / "best_cat_feature_importances.csv"
 
     if not fi_path.exists():
@@ -996,8 +1265,12 @@ elif page == "SHAP Explanation":
     else:
         fi_df = read_csv_safely(fi_path)
 
-        st.subheader("Raw feature-importance table")
-        st.dataframe(fi_df, use_container_width=True)
+        with st.expander("View raw feature-importance table", expanded=False):
+            st.dataframe(
+                fi_df,
+                use_container_width=True,
+                height=420
+            )
 
         st.divider()
 
@@ -1052,10 +1325,47 @@ elif page == "SHAP Explanation":
             )
 
             st.subheader("Original-feature-level importance")
-            st.bar_chart(
-                grouped_fi.set_index("Original feature")[importance_col]
+            grouped_fig = px.bar(
+                grouped_fi.sort_values(importance_col, ascending=True),
+                x=importance_col,
+                y="Original feature",
+                orientation="h",
+                text=importance_col,
+                title=None
             )
-            st.dataframe(grouped_fi, use_container_width=True)
+
+            grouped_fig.update_traces(
+                marker_color="#5B4BDB",
+                texttemplate="%{text:.2f}",
+                textposition="outside"
+            )
+
+            grouped_fig.update_layout(
+                height=420,
+                template="plotly_white",
+                margin=dict(l=40, r=30, t=60, b=40),
+                xaxis_title="Aggregated importance",
+                yaxis_title="Original predictor"
+            )
+
+            st.plotly_chart(
+                grouped_fig,
+                use_container_width=True,
+                config=PLOT_CONFIG
+            )
+            st.info(
+                "At the original-predictor level, Admin dose, Size, and Zeta Potential showed the largest "
+                "aggregated feature importance, suggesting that continuous formulation and administration "
+                "variables contributed strongly to model-based candidate prioritization. Feature importance "
+                "should be interpreted as model behavior rather than causal evidence."
+            )
+
+            with st.expander("View original-feature-level importance table", expanded=False):
+                st.dataframe(
+                    grouped_fi,
+                    use_container_width=True,
+                    height=320
+                )
 
             st.divider()
 
@@ -1074,10 +1384,40 @@ elif page == "SHAP Explanation":
             )
 
             st.subheader(f"Top {top_n} preprocessed feature importances")
-            st.bar_chart(
-                top_fi_df.set_index(feature_col)[importance_col]
+            top_feature_fig = px.bar(
+                top_fi_df.sort_values(importance_col, ascending=True),
+                x=importance_col,
+                y=feature_col,
+                orientation="h",
+                text=importance_col,
+                title=None
             )
-            st.dataframe(top_fi_df, use_container_width=True)
+
+            top_feature_fig.update_traces(
+                marker_color="#5B4BDB",
+                texttemplate="%{text:.2f}",
+                textposition="outside"
+            )
+
+            top_feature_fig.update_layout(
+                height=520,
+                template="plotly_white",
+                margin=dict(l=40, r=30, t=60, b=40),
+                xaxis_title="Feature importance",
+                yaxis_title="Preprocessed feature"
+            )
+
+            st.plotly_chart(
+                top_feature_fig,
+                use_container_width=True,
+                config=PLOT_CONFIG
+            )
+            with st.expander("View top preprocessed feature-importance table", expanded=False):
+                st.dataframe(
+                    top_fi_df,
+                    use_container_width=True,
+                    height=420
+                )
 
             st.info(
                 "The original-feature-level chart is easier to interpret for reporting. "
@@ -1098,6 +1438,25 @@ elif page == "Model Evaluation":
         score distribution, and confusion matrix.
         """
     )
+    st.info(
+        "The independent test set was reserved exclusively for final model evaluation "
+        "and was not used during model training, hyperparameter optimization, or model selection."
+    )
+
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="section-label">INDEPENDENT TEST PERFORMANCE</div>
+            <h3>Final evaluation of the retained screening model</h3>
+            <p>
+                This module reports independent test-set performance, threshold-based classification
+                metrics, ranking-oriented enrichment metrics, and diagnostic plots for the retained
+                CatBoost model.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     metrics_path = RESULTS_DIR / "best_cat_metrics_test.csv"
     pred_path = RESULTS_DIR / "best_cat_test_predictions.csv"
@@ -1112,10 +1471,14 @@ elif page == "Model Evaluation":
 
         st.subheader("Independent test-set metrics")
 
-        st.dataframe(metrics_df, use_container_width=True, height=120)
+        with st.expander("View raw independent test-set metrics", expanded=False):
+            st.dataframe(
+                metrics_df,
+                use_container_width=True,
+                height=160
+            )
 
         metric_row = metrics_df.iloc[0].to_dict()
-
         pr_auc_value = metric_row.get("PR-AUC", np.nan)
         roc_auc_value = metric_row.get("ROC-AUC", np.nan)
         precision_value = metric_row.get("Precision", np.nan)
@@ -1145,7 +1508,24 @@ elif page == "Model Evaluation":
         if ranking_cols:
             ranking_df = metrics_df[ranking_cols].T.reset_index()
             ranking_df.columns = ["Metric", "Value"]
-            st.dataframe(ranking_df, use_container_width=True, height=240)
+
+            rk_cols = st.columns(min(5, len(ranking_df)))
+
+            for i, (_, row) in enumerate(ranking_df.head(5).iterrows()):
+                with rk_cols[i]:
+                    value = row["Value"]
+                    try:
+                        value = f"{float(value):.4f}"
+                    except Exception:
+                        value = str(value)
+                    result_card(row["Metric"], value)
+
+            with st.expander("View ranking-oriented metric table", expanded=False):
+                st.dataframe(
+                    ranking_df,
+                    use_container_width=True,
+                    height=240
+                )
         else:
             st.warning("Precision@K / Recall@K / EF metrics were not found in best_cat_metrics_test.csv.")
 
@@ -1255,7 +1635,12 @@ elif page == "Model Evaluation":
                     columns=["Predicted low-delivery", "Predicted high-delivery"]
                 )
 
-                st.dataframe(cm_df, use_container_width=True, height=120)
+                with st.expander("View confusion-matrix counts", expanded=False):
+                    st.dataframe(
+                        cm_df,
+                        use_container_width=True,
+                        height=120
+                    )
 
                 cm_fig = px.imshow(
                     cm_df,
