@@ -326,18 +326,23 @@ except Exception as e:
 st.sidebar.title("🧬 NanoScreen-AI")
 st.sidebar.markdown("High tumor delivery nanoparticle screening")
 
-page = st.sidebar.radio(
+navigation_labels = {
+    "Overview": "Overview",
+    "Formulation Prediction": "Model Prediction",
+    "Batch Screening": "Candidate Screening",
+    "Top-Ranked Candidates": "Top Candidates",
+    "Model-Predicted Ranges": "Local Working Range",
+    "Model Interpretation": "Model Interpretation",
+    "Model Performance": "Model Evaluation",
+}
+
+selected_page = st.sidebar.radio(
     "Navigation",
-    [
-        "Overview",
-        "Model Prediction",
-        "Candidate Screening",
-        "Top Candidates",
-        "Local Working Range",
-        "Model Interpretation",
-        "Model Evaluation"
-    ]
+    list(navigation_labels.keys())
 )
+
+# Keep the existing page logic/content unchanged while showing the revised labels in the sidebar.
+page = navigation_labels[selected_page]
 
 # ----------------------------
 # Page 1: Overview
@@ -345,7 +350,7 @@ page = st.sidebar.radio(
 if page == "Overview":
     st.title("NanoScreen-AI Dashboard")
     st.subheader(
-        "A screening-oriented machine-learning system for high tumor delivery nanoparticle prioritization"
+        "An AI-assisted screening system for prioritizing nanoparticle formulations for efficient tumor delivery"
     )
 
     st.markdown(
@@ -354,12 +359,13 @@ if page == "Overview":
             <div class="hero-grid">
                 <div>
                     <div class="hero-label">NANOSCREEN-AI</div>
-                    <h2 class="hero-title">Machine-learning-guided nanoparticle candidate screening</h2>
+                    <h2 class="hero-title">AI-assisted nanoparticle formulation screening and prioritization</h2>
                     <p class="hero-text">
-                        NanoScreen-AI is a screening-oriented dashboard for prioritizing nanoparticle 
-                        formulations with high tumor delivery potential. The system integrates dataset curation, 
-                        q0.75 high-delivery task construction, CatBoost-based prediction, candidate ranking, 
-                        model interpretation, and local working range recommendation.
+                        NanoScreen-AI is an interactive dashboard for prioritizing nanoparticle formulations 
+                        with high predicted tumor-delivery potential. It integrates high-delivery class definition 
+                        using the training-set Q<sub>0.75</sub> threshold, prediction using the selected CatBoost screening 
+                        model, candidate ranking, SHAP-based model interpretation, and candidate-specific 
+                        model-predicted ranges.
                     </p>
                     <div class="hero-tags">
                         <span>CatBoost</span>
@@ -370,15 +376,15 @@ if page == "Overview":
                     </div>
                 </div>
                 <div class="pipeline-box">
-                    <div class="pipe-step">Nano-Tumor Dataset</div>
-                    <div class="pipe-arrow">↓</div>
-                    <div class="pipe-step">q0.75 Binary Task</div>
-                    <div class="pipe-arrow">↓</div>
-                    <div class="pipe-step">CatBoost Screening Model</div>
-                    <div class="pipe-arrow">↓</div>
-                    <div class="pipe-step">Top-ranked Candidates</div>
-                    <div class="pipe-arrow">↓</div>
-                    <div class="pipe-step">Local Working Range</div>
+                <div class="pipe-step">Nano-Tumor Dataset</div>
+                <div class="pipe-arrow">↓</div>
+                <div class="pipe-step">High-delivery class definition (Q<sub>0.75</sub>)</div>
+                <div class="pipe-arrow">↓</div>
+                <div class="pipe-step">Selected screening model (CatBoost)</div>
+                <div class="pipe-arrow">↓</div>
+                <div class="pipe-step">Top-ranked Candidates</div>
+                <div class="pipe-arrow">↓</div>
+                <div class="pipe-step">Candidate-specific model-predicted ranges</div>
                 </div>
             </div>
         </div>
@@ -432,10 +438,10 @@ if page == "Overview":
             <h3>Screening task definition</h3>
             <p>
                 NanoScreen-AI prioritizes nanoparticle formulations according to their predicted
-                probability of belonging to the training-set-defined q0.75 high-delivery class
+                probability of belonging to the training-set-defined Q<sub>0.75</sub> high-delivery class
                 for 24 h tumor delivery efficiency. The retained CatBoost model is used for
-                candidate ranking, batch screening, local working range recommendation, and
-                model interpretation.
+                candidate ranking, batch screening, candidate-specific model-predicted range estimation,
+                and model interpretation.
             </p>
         </div>
         """,
@@ -445,10 +451,10 @@ if page == "Overview":
     mc1, mc2, mc3, mc4 = st.columns(4, gap="large")
 
     with mc1:
-        result_card("Endpoint", "DE<sub>tumor</sub> at 24 h")
+        result_card("Endpoint", "DE<sub>Tumor</sub> at 24 h")
 
     with mc2:
-        result_card("Task", "q0.75 high-delivery")
+        result_card("Task", "Q<sub>0.75</sub> high-delivery")
 
     with mc3:
         result_card("Primary model", "CatBoost")
@@ -480,7 +486,7 @@ if page == "Overview":
     c1.metric("Analytical records", "534")
     c2.metric("Training samples", "429")
     c3.metric("Independent test samples", "105")
-    c4.metric("q0.75 high-delivery cutoff", "1.7728 %ID")
+    c4.metric("Q₀.₇₅ high-delivery cutoff", "1.7728 %ID")
 
     c5, c6, c7, c8 = st.columns(4)
     c5.metric("Primary model", "CatBoost")
@@ -517,7 +523,7 @@ if page == "Overview":
             """
             **2. Task definition**
 
-            DE<sub>tumor</sub> at 24 h was converted into a q0.75 high-delivery classification task.
+            DE<sub>Tumor</sub> at 24 h was converted into a Q<sub>0.75</sub> high-delivery classification task.
             """,
             unsafe_allow_html=True
         )
@@ -545,7 +551,7 @@ if page == "Overview":
             """
             **5. Interpretation**
 
-            Feature importance and local working ranges support model interpretation and experimental planning.
+            Feature importance and candidate-specific model-predicted ranges support model interpretation and experimental planning.
             """
         )
 
@@ -561,42 +567,36 @@ if page == "Overview":
     with m1:
         st.markdown(
             """
-            ### Model Prediction
+            ### Formulation Prediction
 
-            Input a single nanoparticle formulation and obtain:
-
-            - high-delivery probability
-            - predicted class
-            - decision threshold
-            - recommendation level
+            - High-delivery probability
+            - Predicted class
+            - Decision threshold
+            - Priority level
             """
         )
 
     with m2:
         st.markdown(
             """
-            ### Candidate Screening
+            ### Batch Screening
 
-            Upload CSV or Excel files for batch screening:
-
-            - batch probability prediction
-            - ranked candidate list
-            - recommendation distribution
-            - downloadable results
+            - Batch probabilities
+            - Ranked candidates
+            - Class distribution
+            - Downloadable results
             """
         )
 
     with m3:
         st.markdown(
             """
-            ### Top Candidates
+            ### Top-Ranked Candidates
 
-            Explore model-prioritized candidates:
-
-            - paper Top 10
-            - paper Top 200
-            - generated Top 200
-            - candidate formulation details
+            - Dataset Top 10
+            - Dataset Top 200
+            - Virtual Top 200
+            - Formulation details
             """
         )
 
@@ -605,14 +605,12 @@ if page == "Overview":
     with m4:
         st.markdown(
             """
-            ### Local Working Range
-
-            Review suggested local parameter windows for:
+            ### Predicted Ranges
 
             - Size
-            - Zeta Potential
+            - Zeta potential
             - Admin dose
-            - Breast-specific recommendations
+            - Model-predicted ranges
             """
         )
 
@@ -621,26 +619,22 @@ if page == "Overview":
             """
             ### Model Interpretation
 
-            Interpret model behavior using:
-
-            - raw feature importance
-            - original-feature-level importance
-            - preprocessed one-hot feature importance
+            - Global SHAP importance
+            - SHAP summary
+            - Local explanation
             """
         )
 
     with m6:
         st.markdown(
             """
-            ### Model Evaluation
-
-            Inspect independent test-set performance:
+            ### Model Performance
 
             - ROC curve
             - PR curve
-            - score distribution
-            - confusion matrix
-            - ranking metrics
+            - Probability distribution
+            - Confusion matrix
+            - Ranking metrics
             """
         )
 
@@ -654,7 +648,7 @@ if page == "Overview":
             <p>
                 This dashboard provides access to the retained CatBoost screening model, 
                 independent test-set evaluation results, model-prioritized candidate tables, 
-                feature-importance summaries, and local working range recommendations. 
+                feature-importance summaries, and candidate-specific model-predicted ranges. 
                 The model-prioritized candidates should be interpreted as computational 
                 hypotheses for experimental validation rather than experimentally confirmed 
                 optimal nanoparticle formulations.
@@ -673,18 +667,18 @@ if page == "Overview":
     # Usage note
     # ----------------------------
     st.info(
-        "Recommended use: first inspect the Overview and Model Evaluation pages, then use Model Prediction "
-        "for individual formulations and Candidate Screening for batch prioritization. Top Candidates and "
-        "Local Working Range provide supporting evidence for formulation design and experimental planning."
+        "Recommended use: first inspect the Overview and Model Performance pages, then use Formulation Prediction "
+        "for individual formulations and Batch Screening for batch prioritization. Top-Ranked Candidates and "
+        "Model-Predicted Ranges provide supporting evidence for formulation design and experimental planning."
     )
 
 
 
 # ----------------------------
-# Page 2: Model Prediction
+# Page 2: Formulation Prediction
 # ----------------------------
 elif page == "Model Prediction":
-    st.title("Model Prediction")
+    st.title("Formulation Prediction")
 
     st.markdown(
         """
@@ -804,7 +798,7 @@ elif page == "Model Prediction":
                     )
 
                 with row2_col2:
-                    result_card("Recommendation", level)
+                    result_card("Priority level", level)
 
                 st.dataframe(
                     pd.DataFrame(
@@ -836,10 +830,10 @@ elif page == "Model Prediction":
                 st.exception(e)
 
 # ----------------------------
-# Page 3: Candidate Screening
+# Page 3: Batch Screening
 # ----------------------------
 elif page == "Candidate Screening":
-    st.title("Candidate Screening")
+    st.title("Batch Screening")
     st.markdown(
         """
         This page allows users to upload a CSV or Excel file for batch prediction, ranking,
@@ -941,39 +935,39 @@ elif page == "Candidate Screening":
 
                     st.divider()
 
-                    st.subheader("Recommendation distribution")
+                    st.subheader("Class distribution")
 
-                    recommendation_count = (
-                        result_df["recommendation"]
+                    class_count = (
+                        result_df["predicted_class"]
                         .value_counts()
                         .reset_index()
                     )
-                    recommendation_count.columns = ["Recommendation", "Count"]
+                    class_count.columns = ["Predicted class", "Count"]
 
-                    rec_fig = px.bar(
-                        recommendation_count,
-                        x="Recommendation",
+                    class_fig = px.bar(
+                        class_count,
+                        x="Predicted class",
                         y="Count",
                         text="Count",
-                        title="Recommendation distribution"
+                        title="Predicted class distribution"
                     )
 
-                    rec_fig.update_traces(
+                    class_fig.update_traces(
                         textposition="outside",
                         marker_color="#5B4BDB"
                     )
 
-                    rec_fig.update_layout(
+                    class_fig.update_layout(
                         height=420,
                         template="plotly_white",
                         margin=dict(l=40, r=30, t=60, b=40),
                         showlegend=False,
-                        xaxis_title="Recommendation level",
+                        xaxis_title="Predicted class",
                         yaxis_title="Number of candidates"
                     )
 
                     st.plotly_chart(
-                        rec_fig,
+                        class_fig,
                         use_container_width=True,
                         config=PLOT_CONFIG
                     )
@@ -1028,7 +1022,7 @@ elif page == "Candidate Screening":
                     st.exception(e)
 
 # ----------------------------
-# Page 4: Top Candidates
+# Page 4: Top-Ranked Candidates
 # ----------------------------
 elif page == "Top Candidates":
     st.title("Top-ranked Candidate Formulations")
@@ -1062,11 +1056,11 @@ elif page == "Top Candidates":
     all_scored_path = DATA_DIR / "generated_candidates_scored.csv"
 
     tab1, tab2, tab3, tab4 = st.tabs(
-        ["Paper Top 10", "Paper Top 200", "Generated Top 200", "All scored candidates"]
+        ["Dataset Top 10", "Dataset Top 200", "Virtual Top 200", "Formulation details"]
     )
 
     with tab1:
-        st.subheader("Paper candidate table: Top 10")
+        st.subheader("Dataset Top 10 candidates")
         if top10_path.exists():
             top10_df = read_csv_safely(top10_path)
 
@@ -1094,7 +1088,7 @@ elif page == "Top Candidates":
                 height=420
             )
 
-            with st.expander("View full Paper Top 10 table", expanded=False):
+            with st.expander("View full Dataset Top 10 table", expanded=False):
                 st.dataframe(
                     top10_df,
                     use_container_width=True,
@@ -1104,7 +1098,7 @@ elif page == "Top Candidates":
             st.error("data/paper_candidate_table_top10.csv was not found.")
 
     with tab2:
-        st.subheader("Paper candidate table: Top 200")
+        st.subheader("Dataset Top 200 candidates")
         if top200_path.exists():
             top200_df = read_csv_safely(top200_path)
 
@@ -1114,7 +1108,7 @@ elif page == "Top Candidates":
                 height=420
             )
 
-            with st.expander("View full Paper Top 200 table", expanded=False):
+            with st.expander("View full Dataset Top 200 table", expanded=False):
                 st.dataframe(
                     top200_df,
                     use_container_width=True,
@@ -1123,7 +1117,7 @@ elif page == "Top Candidates":
         else:
             st.error("data/paper_candidate_table_top200.csv was not found.")
     with tab3:
-        st.subheader("Generated Top 200 candidates")
+        st.subheader("Virtual Top 200 candidates")
         if generated_top200_path.exists():
             generated_top200_df = read_csv_safely(generated_top200_path)
 
@@ -1133,7 +1127,7 @@ elif page == "Top Candidates":
                 height=420
             )
 
-            with st.expander("View full Generated Top 200 table", expanded=False):
+            with st.expander("View full Virtual Top 200 table", expanded=False):
                 st.dataframe(
                     generated_top200_df,
                     use_container_width=True,
@@ -1143,7 +1137,7 @@ elif page == "Top Candidates":
             st.error("data/generated_top200.csv was not found.")
 
     with tab4:
-        st.subheader("All generated candidates with model scores")
+        st.subheader("Model-scored candidate formulation details")
         if all_scored_path.exists():
             all_scored_df = read_csv_safely(all_scored_path)
 
@@ -1164,14 +1158,14 @@ elif page == "Top Candidates":
 
 
 # ----------------------------
-# Page 5: Local Working Range
+# Page 5: Model-Predicted Ranges
 # ----------------------------
 elif page == "Local Working Range":
-    st.title("Local Working Range")
+    st.title("Model-Predicted Ranges")
 
     st.markdown(
         """
-        This page displays model-prioritized local working ranges for key continuous variables,
+        This page displays candidate-specific model-predicted ranges for key continuous variables,
         including **Size**, **Zeta Potential**, and **Admin**.
         """
     )
@@ -1179,11 +1173,11 @@ elif page == "Local Working Range":
     st.markdown(
         """
         <div class="section-card">
-            <div class="section-label">DESIGN SPACE RECOMMENDATION</div>
-            <h3>Model-prioritized local parameter windows</h3>
+            <div class="section-label">MODEL-PREDICTED RANGES</div>
+            <h3>Candidate-specific model-predicted parameter ranges</h3>
             <p>
-                This module summarizes local working ranges for key continuous formulation
-                variables. These windows are intended to support formulation design and
+                This module summarizes model-prioritized local ranges for key continuous formulation
+                variables. These ranges are intended to support formulation design and
                 experimental planning rather than define experimentally validated optima.
             </p>
         </div>
@@ -1196,11 +1190,11 @@ elif page == "Local Working Range":
     breast_path = DATA_DIR / "range_recommendation_Breast_pretty.csv"
 
     tab1, tab2, tab3 = st.tabs(
-        ["Pretty Table", "Detailed Table", "Breast-specific"]
+        ["Summary", "Detailed", "Breast-specific"]
     )
 
     with tab1:
-        st.subheader("Local working range: pretty table")
+        st.subheader("Model-predicted range summary")
         if pretty_path.exists():
             pretty_df = read_csv_safely(pretty_path)
             st.dataframe(pretty_df, use_container_width=True, height=260)
@@ -1208,7 +1202,7 @@ elif page == "Local Working Range":
             st.error("data/range_recommendation_pretty.csv was not found.")
 
     with tab2:
-        st.subheader("Local working range: detailed table")
+        st.subheader("Detailed model-predicted ranges")
         if detail_path.exists():
             detail_df = read_csv_safely(detail_path)
             st.dataframe(detail_df, use_container_width=True, height=520)
@@ -1216,7 +1210,7 @@ elif page == "Local Working Range":
             st.error("data/range_recommendation_detail.csv was not found.")
 
     with tab3:
-        st.subheader("Breast-specific local working range")
+        st.subheader("Breast-specific model-predicted ranges")
         if breast_path.exists():
             breast_df = read_csv_safely(breast_path)
             st.dataframe(breast_df, use_container_width=True, height=420)
@@ -1224,7 +1218,7 @@ elif page == "Local Working Range":
             st.warning("data/range_recommendation_Breast_pretty.csv was not found.")
 
     st.info(
-        "Local working ranges should be interpreted as model-prioritized parameter windows, "
+        "Model-predicted ranges should be interpreted as model-prioritized parameter windows, "
         "not experimentally validated optimal conditions."
     )
 
@@ -1426,10 +1420,10 @@ elif page == "Model Interpretation":
 
 
 # ----------------------------
-# Page 7: Model Evaluation
+# Page 7: Model Performance
 # ----------------------------
 elif page == "Model Evaluation":
-    st.title("Model Evaluation")
+    st.title("Model Performance")
 
     st.markdown(
         """
@@ -1548,7 +1542,7 @@ elif page == "Model Evaluation":
             y_pred = pred_df["y_pred_test"].astype(int).to_numpy()
 
             tab1, tab2, tab3, tab4 = st.tabs(
-                ["ROC Curve", "PR Curve", "Score Distribution", "Confusion Matrix"]
+                ["ROC Curve", "PR Curve", "Probability Distribution", "Confusion Matrix"]
             )
 
             with tab1:
@@ -1616,7 +1610,7 @@ elif page == "Model Evaluation":
                         "y_prob_test": "Predicted high-delivery probability",
                         "color": "True class"
                     },
-                    title="Predicted-score distribution by true class"
+                    title="Predicted-probability distribution by true class"
                 )
                 score_fig.update_layout(
                     height=420,
