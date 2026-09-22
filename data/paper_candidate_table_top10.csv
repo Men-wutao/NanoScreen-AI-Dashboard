@@ -1,0 +1,11 @@
+﻿Rank,Type,MAT,TS,CT,TM,Shape,Size (log10),Size (nm),Size local interval,Zeta Potential,Zeta Potential local interval,Admin,Admin local interval,Predicted high-delivery probability,Model rank
+1,INM,Gold,Passive,Skin,Xenograft Orthotopic,Spherical,2.379,239.332,227.0 – 251.0 nm,-10.055,-15.14 – -4.97,382.865,325.435 – 402.831,0.986,1
+2,INM,Gold,Passive,Skin,Xenograft Orthotopic,Spherical,2.538,345.144,331.0 – 359.0 nm,-11.012,-16.1 – -5.93,176.148,149.726 – 202.57,0.985,2
+3,INM,Gold,Passive,Skin,Xenograft Orthotopic,Spherical,2.417,261.216,249.0 – 273.0 nm,-11.281,-16.36 – -6.2,103.86,79.692 – 128.028,0.985,3
+4,INM,Gold,Passive,Skin,Xenograft Orthotopic,Spherical,2.323,210.378,198.0 – 222.0 nm,-11.796,-16.88 – -6.71,44.545,20.377 – 68.713,0.984,4
+5,INM,Gold,Passive,Skin,Xenograft Orthotopic,Spherical,2.475,298.538,287.0 – 311.0 nm,-16.04,-18.92 – -10.96,98.87,74.702 – 123.038,0.983,5
+6,ONM,Polymeric,Passive,Liver,Xenograft Heterotopic,Spherical,2.194,156.315,150.0 – 168.0 nm,-31.085,-36.17 – -26.0,413.513,351.486 – 413.513,0.982,6
+7,INM,Gold,Passive,Skin,Xenograft Orthotopic,Spherical,2.181,151.705,148.0 – 164.0 nm,-13.576,-18.66 – -8.49,103.301,79.133 – 127.469,0.98,7
+8,ONM,Dendrimer,Active,Breast,Allograft Heterotopic,Spherical,1.262,18.281,6.0 – 30.0 nm,-1.288,-6.37 – 3.8,67.797,43.629 – 91.965,0.979,8
+9,Hybrid,Hybrid,Passive,Skin,Allograft Orthotopic,Spherical,2.493,311.172,299.0 – 324.0 nm,-14.478,-19.39 – -9.39,315.078,267.816 – 362.34,0.978,9
+10,ONM,Dendrimer,Active,Cervix,Xenograft Heterotopic,Spherical,1.149,14.093,6.0 – 22.0 nm,13.171,8.09 – 18.25,0.121,0.035 – 3.814,0.978,10
