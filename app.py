@@ -403,14 +403,9 @@ if page == "Overview":
     framework_path = BASE_DIR / "figures" / "study_framework.png"
 
     if framework_path.exists():
-        st.image(
-            str(framework_path),
-            width="stretch"
-        )
+        st.image(str(framework_path))
     else:
-        st.warning(
-            "Study framework figure was not found."
-        )
+        st.warning("Study framework figure was not found.")
     st.divider()
 
     # ----------------------------
