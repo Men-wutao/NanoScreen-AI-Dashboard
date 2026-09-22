@@ -400,18 +400,13 @@ if page == "Overview":
     st.divider()
     st.header("Study framework")
 
-    from pathlib import Path
-
-    BASE_DIR = Path(__file__).resolve().parent
-
     framework_path = BASE_DIR / "figures" / "study_framework.png"
 
     if framework_path.exists():
-        with open(framework_path, "rb") as f:
-            st.image(
-                f.read(),
-                use_container_width=True
-            )
+        st.image(
+            str(framework_path),
+            use_container_width=True
+        )
     else:
         st.warning(
             "Study framework figure was not found."
