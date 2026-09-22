@@ -2,6 +2,11 @@
 
 An AI-assisted Streamlit dashboard for prioritizing nanoparticle formulations with high predicted tumor-delivery potential.
 
+## Live Demo
+
+🔗 Streamlit App:
+https://nanoscreen-ai-dashboard.streamlit.app/
+
 ## Overview
 
 NanoScreen-AI integrates machine learning-based screening, candidate ranking, model interpretation, and model-predicted parameter range estimation for nanoparticle formulation prioritization.
