@@ -405,13 +405,12 @@ if page == "Overview":
     if framework_path.exists():
         st.image(
             str(framework_path),
-            use_container_width=True
+            width="stretch"
         )
     else:
         st.warning(
             "Study framework figure was not found."
         )
-
     st.divider()
 
     # ----------------------------
