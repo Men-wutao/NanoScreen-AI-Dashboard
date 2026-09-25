@@ -592,7 +592,6 @@ if page == "Overview":
             """
             ### Top-Ranked Candidates
 
-            - Dataset Top 10
             - Dataset Top 200
             - Virtual Top 200
             - Formulation details
@@ -1041,7 +1040,6 @@ elif page == "Top Candidates":
         unsafe_allow_html=True
     )
 
-    top10_path = DATA_DIR / "paper_candidate_table_top10.csv"
     top200_path = DATA_DIR / "paper_candidate_table_top200.csv"
     generated_top200_path = DATA_DIR / "generated_top200.csv"
     all_scored_path = DATA_DIR / "generated_candidates_scored.csv"
@@ -1079,49 +1077,11 @@ elif page == "Top Candidates":
 
 
 
-    tab1, tab2, tab3, tab4 = st.tabs(
-        ["Dataset Top 10", "Dataset Top 200", "Virtual Top 200", "Formulation details"]
+    tab1, tab2, tab3 = st.tabs(
+        [ "Dataset Top 200", "Virtual Top 200", "Formulation details"]
     )
 
     with tab1:
-        st.subheader("Dataset Top 10 candidates")
-        if top10_path.exists():
-            top10_df = read_csv_safely(top10_path)
-
-            top10_display_cols = [
-                "Rank",
-                "Type",
-                "MAT",
-                "TS",
-                "CT",
-                "TM",
-                "Shape",
-                "Size (log10)",
-                "Size (nm)",
-                "Zeta Potential",
-                "Admin",
-                "predicted_high_delivery_probability",
-                "recommendation",
-            ]
-
-            display_cols = [col for col in top10_display_cols if col in top10_df.columns]
-
-            st.dataframe(
-                top10_df[display_cols],
-                use_container_width=True,
-                height=420
-            )
-
-            with st.expander("View full Dataset Top 10 table", expanded=False):
-                st.dataframe(
-                    top10_df,
-                    use_container_width=True,
-                    height=520
-                )
-        else:
-            st.error("data/paper_candidate_table_top10.csv was not found.")
-
-    with tab2:
         st.subheader("Dataset Top 200 candidates")
         if top200_path.exists():
             top200_df = read_csv_safely(top200_path)
@@ -1140,7 +1100,7 @@ elif page == "Top Candidates":
                 )
         else:
             st.error("data/paper_candidate_table_top200.csv was not found.")
-    with tab3:
+    with tab2:
         st.subheader("Virtual Top 200 candidates")
         if generated_top200_path.exists():
             generated_top200_df = read_csv_safely(generated_top200_path)
@@ -1160,7 +1120,7 @@ elif page == "Top Candidates":
         else:
             st.error("data/generated_top200.csv was not found.")
 
-    with tab4:
+    with tab3:
         st.subheader("Model-scored candidate formulation details")
         if all_scored_path.exists():
             all_scored_df = read_csv_safely(all_scored_path)
